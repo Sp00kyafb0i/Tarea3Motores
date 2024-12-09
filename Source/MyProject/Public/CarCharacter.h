@@ -4,7 +4,9 @@
 
 #include "CoreMinimal.h"
 #include "GameFramework/Character.h"
+#include "GameFramework/CharacterMovementComponent.h"
 #include "CarCharacter.generated.h"
+
 
 UCLASS()
 class MYPROJECT_API ACarCharacter : public ACharacter
@@ -45,7 +47,14 @@ public:
 	float MinSpeed;
 	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "Custom")
 	bool OnAir;
-
-	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "Control")
+	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "Custom")
 	float BaseTurnRate;
+	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "Custom")
+	float SideSpeed;
+	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "Custom")
+	float MinYaw;
+	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "Custom")
+	float MaxYaw;
+	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "Custom")
+	float isTurning;
 };

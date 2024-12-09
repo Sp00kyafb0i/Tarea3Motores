@@ -32,12 +32,16 @@ ACarCharacter::ACarCharacter()
 
 
 
-	Acceleration = 50.f;
+	Acceleration = 500.f;
 	OnAir = false;
-	MaxSpeed = 1000.f;
+	MaxSpeed = 2000.f;
 	MinSpeed = 200.f;
 	BaseSpeed = 400.f;
 	BaseTurnRate = 45.f;
+	SideSpeed = 200.f;
+	MinYaw = -60.f;
+	MaxYaw = 60.f;
+	isTurning = false;
 
 	
 }
@@ -46,6 +50,10 @@ ACarCharacter::ACarCharacter()
 void ACarCharacter::BeginPlay()
 {
 	Super::BeginPlay();
+
+	bUseControllerRotationYaw = false;
+
+	GetCharacterMovement()->bOrientRotationToMovement = false;
 	
 }
 
@@ -55,17 +63,20 @@ void ACarCharacter::Tick(float DeltaTime)
 	Super::Tick(DeltaTime);
 
 
-	BaseSpeed += Acceleration * DeltaTime;
-	if (BaseSpeed < MinSpeed) {
-		BaseSpeed = MinSpeed;
-	}
-	if (BaseSpeed > MaxSpeed) {
-		BaseSpeed = MaxSpeed;
-	}
+	BaseSpeed = FMath::Clamp(BaseSpeed + Acceleration * DeltaTime, MinSpeed, MaxSpeed);
 	FVector Location = GetActorLocation();
 	Location.Y += BaseSpeed * DeltaTime;
+	//Location.X += SideSpeed * DeltaTime;
 	SetActorLocation(Location);
+	if (!isTurning) {
+		FRotator CurrentRotation = GetActorRotation();
+		CurrentRotation.Yaw = FMath::FInterpTo(CurrentRotation.Yaw, 0.0f, DeltaTime, BaseTurnRate/10);
+		SetActorRotation(CurrentRotation);
 
+		// Debug para verificar el valor
+		UE_LOG(LogTemp, Warning, TEXT("Actor Rotation (Yaw): %f"), CurrentRotation.Yaw);
+	}
+	
 }
 
 // Called to bind functionality to input
@@ -87,14 +98,28 @@ void ACarCharacter::MoveForward(float Value)
 {
 	if (Controller && Value != 0.0f)
 	{
-		BaseSpeed += Value * 2 * Acceleration * GetWorld()->GetDeltaSeconds();
+		BaseSpeed += Value * Acceleration;
+		
 	}
 }
 
 void ACarCharacter::Turn(float Value)
 {
-	FRotator Rotation = GetActorRotation();
-	Rotation.Yaw += Value * BaseTurnRate;
-	SetActorRotation(Rotation);
+	
+
+	if (Controller && Value != 0.0f)
+	{
+		//SideSpeed += Value * Acceleration;
+		FVector Location = GetActorLocation();
+		Location.X -= SideSpeed * Value * GetWorld()->GetDeltaSeconds();
+		SetActorLocation(Location);
+		FRotator Rotation = GetActorRotation();
+		Rotation.Yaw = FMath::ClampAngle(Rotation.Yaw + BaseTurnRate * GetWorld()->GetDeltaSeconds() * Value, MinYaw, MaxYaw);
+		SetActorRotation(Rotation);
+		isTurning = true;
+	}
+	else {
+		isTurning = false;
+	}
 }
 
