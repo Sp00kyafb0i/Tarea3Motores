@@ -27,6 +27,7 @@ ACar::ACar()
 
 	FRotator Rotation = GetActorRotation();
 	Rotation.Roll += 90;
+	Rotation.Yaw -= 90;
 	SetActorRotation(Rotation);
 
 
