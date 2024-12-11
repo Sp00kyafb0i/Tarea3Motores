@@ -86,7 +86,7 @@ void AMeshObjectSpawner::SpawnObjects()
         GetWorld()->SpawnActor<AActor>(ObjectToSpawn, SpawnLocation, FRotator::ZeroRotator, SpawnParams);
 
         // Optional: Debug point
-        DrawDebugSphere(GetWorld(), SpawnLocation, 25.0f, 12, FColor::Green, false, 10.0f);
+        //DrawDebugSphere(GetWorld(), SpawnLocation, 25.0f, 12, FColor::Green, false, 10.0f);
     }
 }
 
